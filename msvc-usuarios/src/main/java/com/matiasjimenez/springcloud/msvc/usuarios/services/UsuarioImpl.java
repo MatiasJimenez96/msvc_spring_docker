@@ -40,6 +40,12 @@ public class UsuarioImpl implements UsuarioService{
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Usuario> listarPorIds(Iterable<Long> ids) {
+        return repository.findAllById(ids);
+    }
+
+    @Override
     public Optional<Usuario> buscarPorEmail(String email) {
         return repository.findByEmail(email);
     }

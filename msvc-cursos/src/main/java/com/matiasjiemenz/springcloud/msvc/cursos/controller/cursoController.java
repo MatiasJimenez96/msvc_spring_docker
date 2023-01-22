@@ -27,7 +27,7 @@ public class cursoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> detalles(@PathVariable Long id){
-        Optional<Curso> o = service.buscarPorId(id);
+        Optional<Curso> o = service.porIdConUsuarios(id); //service.buscarPorId(id);
         if (o.isPresent()){
             return ResponseEntity.ok(o.get());
         }
@@ -67,7 +67,7 @@ public class cursoController {
     }
     /* --------------  Comunicacion con msvc_usuario   ----------------------- */
 
-    @PutMapping("/asisgnar-usuario/{cursoId}")
+    @PutMapping("/asignar-usuario/{cursoId}")
     public ResponseEntity<?> asignarUsuario(@RequestBody Usuario usuario, @PathVariable Long cursoId){
         Optional<Usuario> o;
         try {

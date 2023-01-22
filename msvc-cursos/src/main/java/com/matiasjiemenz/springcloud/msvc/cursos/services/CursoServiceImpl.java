@@ -34,6 +34,25 @@ public class CursoServiceImpl implements CursoService{
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Optional<Curso> porIdConUsuarios(Long id) {
+        Optional<Curso> cursoOptional = cursoRepository.findById(id);
+        if (cursoOptional.isPresent()){
+            Curso curso = cursoOptional.get();
+            if (!curso.getCursoUsuarios().isEmpty()){
+                List<Long> ids = curso
+                        .getCursoUsuarios()
+                        .stream()
+                        .map(cu -> cu.getUsuarioId()).toList();
+                List<Usuario> usuarios = usuarioClientRest.obtenerAlumnosPorCursos(ids);
+                curso.setUsuarios(usuarios);
+            }
+            return Optional.of(curso);
+        }
+        return Optional.empty();
+    }
+
+    @Override
     @Transactional
     public Curso guardar(Curso curso) {
         return cursoRepository.save(curso);
@@ -49,9 +68,15 @@ public class CursoServiceImpl implements CursoService{
     public Optional<Usuario> asignarUsuario(Usuario usuario, Long cursoId) {
         Optional<Curso> o = cursoRepository.findById(cursoId);
         if (o.isPresent()){
+            Curso curso = o.get();
             Usuario usuarioMsvc = usuarioClientRest.detalle(usuario.getId());
 
-            Curso curso = o.get();
+            boolean existeUsuarioEnElCurso =  curso.getCursoUsuarios().stream().anyMatch(u-> u.getUsuarioId().equals(usuarioMsvc.getId()));
+
+            if (existeUsuarioEnElCurso){
+                System.out.println("EL USUARIO YA EXISTE EN ESTE CURSO");
+                return Optional.empty();
+            }
             CursoUsuario cursoUsuario = new CursoUsuario();
             cursoUsuario.setUsuarioId(usuarioMsvc.getId());
 

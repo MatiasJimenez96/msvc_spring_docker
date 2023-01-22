@@ -18,7 +18,7 @@ public class Curso {
     @NotEmpty
     private String nombre;
 
-    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "curso_id")
     private List<CursoUsuario> cursoUsuarios;
 
